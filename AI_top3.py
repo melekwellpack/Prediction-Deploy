@@ -14,7 +14,30 @@ load_dotenv(override=True)
 MISTRAL_API_KEY = os.getenv("MISTRAL_API_KEY_2")
 MISTRAL_API_URL = "https://api.mistral.ai/v1/chat/completions"
 
-locale.setlocale(locale.LC_TIME, "fr_FR.UTF-8")
+# Locale setup with fallback
+def setup_locale():
+    """Try to set French locale with fallbacks"""
+    locale_options = [
+        "fr_FR.UTF-8",
+        "fr_FR",
+        "fr_FR.utf8",
+        "French_France.1252",  # Windows format
+        "C.UTF-8"  # Universal fallback
+    ]
+    
+    for loc in locale_options:
+        try:
+            locale.setlocale(locale.LC_TIME, loc)
+            print(f"Successfully set locale to: {loc}")
+            return loc
+        except locale.Error:
+            continue
+    
+    print("Warning: Could not set French locale, using system default")
+    return None
+
+# Call the setup function instead of direct setlocale
+setup_locale()
 
 def get_top_3_sms_combinations(sms_content, campaign_data):
     def get_holidays(year):
